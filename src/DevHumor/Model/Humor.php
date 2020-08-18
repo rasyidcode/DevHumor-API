@@ -1,5 +1,7 @@
 <?php
 
+namespace DevHumor\Model;
+
 class Humor {
 
     /**
@@ -175,7 +177,7 @@ class Humor {
      * @param string
      */
     public function setSourceUrl(string $source_url) {
-        $this->source_url = trim($this->source_url);
+        $this->source_url = trim($source_url);
     }
 
     /**

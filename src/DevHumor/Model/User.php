@@ -1,5 +1,7 @@
 <?php
 
+namespace DevHumor\Model;
+
 class User {
 
     /**
