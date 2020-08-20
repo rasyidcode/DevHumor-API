@@ -4,9 +4,6 @@ namespace DevHumor;
 
 use DevHumor\Exception\NotFoundElementException;
 use DevHumor\Helper\Response;
-use DevHumor\Model\Content;
-use DevHumor\Model\User;
-use DevHumor\Model\Humor;
 
 class DevHumor {
 
@@ -17,12 +14,12 @@ class DevHumor {
     const CODE_NOT_FOUND = 401;
     const CODE_INTERNAL_SERVER_ERROR = 500;
 
-    private $_dom;
-    private $_is_using_nodes;
+    private $dom;
+    private $is_using_nodes;
 
     public function __construct(bool $is_using_nodes = true) {
-        $this->_dom = new \simple_html_dom;
-        $this->_is_using_nodes = $is_using_nodes;
+        $this->dom = new \simple_html_dom;
+        $this->is_using_nodes = $is_using_nodes;
     }
 
     /**
@@ -34,16 +31,16 @@ class DevHumor {
      */
     public function getMainPageHumors(int $page = 1) : Response {
         $page       = $page > 0 ? $page : 1;
-        $response   = $this->_curlGet(self::BASE_URL.'?page='.$page);
-        $this->_dom->load($response);
+        $response   = $this->curlGet(self::BASE_URL.'?page='.$page);
+        $this->dom->load($response);
 
         $all_humor  = array();
 
-        $humors = $this->_dom->find('div[data-href^="https://devhumor.com/media/"]');
+        $humors = $this->dom->find('div[data-href^="https://devhumor.com/media/"]');
 
         if (count($humors) > 0) {
             foreach($humors as $humor) {
-                $created_humor = $this->_createHumor($humor);
+                $created_humor = $this->createHumor($humor);
                 array_push($all_humor, $created_humor->output());
             }
         } else {
@@ -82,16 +79,16 @@ class DevHumor {
                 $path = 'popular';
         }
 
-        $response = $this->_curlGet(self::BASE_URL.$path.'?page='.$page);
-        $this->_dom->load($response);
+        $response = $this->curlGet(self::BASE_URL.$path.'?page='.$page);
+        $this->dom->load($response);
 
         $all_humor = array();
 
-        $humors = $this->_dom->find('div[data-href^="https://devhumor.com/media/"]');
+        $humors = $this->dom->find('div[data-href^="https://devhumor.com/media/"]');
 
         if (count($humors) > 0) {
             foreach($humors as $humor) {
-                $created_humor = $this->_createHumor($humor);
+                $created_humor = $this->createHumor($humor);
                 array_push($all_humor, $created_humor->output());
             }
         } else {
@@ -110,7 +107,26 @@ class DevHumor {
      * @return Response
      */
     public function getHumorByCategory($page = 1, $category = 'uncategorized') : Response {
+        $response   = $this->curlGet(self::BASE_URL . 'category/' . $category . '?page=' . $page);
+        // print_r(self::BASE_URL . 'category/' . $category . '?page=' . $page);die();
+        $this->dom->load($response);
 
+        $all_humor  = array();
+
+        $humors     = $this->dom->find('div[data-href^="https://devhumor.com/media/"]');
+
+        if (count($humors) > 0) {
+            foreach($humors as $humor) {
+                $created_humor  = $this->createHumor($humor);
+                $all_humor[]    = $created_humor->output();
+            }
+        } else {
+            if ($page == 1) {
+                throw new NotFoundElementException;
+            }
+        }
+
+        return Response::create($all_humor);
     }
 
     /**
@@ -119,6 +135,15 @@ class DevHumor {
      * @return Response
      */
     public function getRandomHumor() : Response {
+        $response   = $this->_curlGet(self::BASE_URL . 'random');
+        $this->dom->load($response);
 
+        $humors      = $this->_dom->find('div[data-href^="https://devhumor.com/media/"]');
+        if (count($humors) > 0) {
+            $created_humor  = $this->_createHumor($humors[0]);
+            return Response::create($created_humor->output());
+        } else {
+            throw new NotFoundElementException;
+        }
     }
 }
