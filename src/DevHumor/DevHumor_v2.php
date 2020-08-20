@@ -4,8 +4,9 @@ namespace DevHumor;
 
 use DevHumor\Exception\NotFoundElementException;
 use DevHumor\Helper\Response;
+use DevHumor\Helper\Http;
 
-class DevHumor {
+class DevHumor extends Http {
 
     use Traits\DevHumorTrait;
 
@@ -135,12 +136,12 @@ class DevHumor {
      * @return Response
      */
     public function getRandomHumor() : Response {
-        $response   = $this->_curlGet(self::BASE_URL . 'random');
+        $response   = $this->curlGet(self::BASE_URL . 'random');
         $this->dom->load($response);
 
-        $humors      = $this->_dom->find('div[data-href^="https://devhumor.com/media/"]');
+        $humors      = $this->dom->find('div[data-href^="https://devhumor.com/media/"]');
         if (count($humors) > 0) {
-            $created_humor  = $this->_createHumor($humors[0]);
+            $created_humor  = $this->createHumor($humors[0]);
             return Response::create($created_humor->output());
         } else {
             throw new NotFoundElementException;

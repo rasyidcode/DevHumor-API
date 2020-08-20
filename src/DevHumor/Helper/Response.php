@@ -25,6 +25,10 @@ class Response {
         return $this->current_data;
     }
 
+    public function asSingle() {
+        return $this->current_data;
+    }
+
     public function asXML() {
 
     }
