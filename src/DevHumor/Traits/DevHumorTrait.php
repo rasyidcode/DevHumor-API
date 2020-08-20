@@ -76,8 +76,7 @@ trait DevHumorTrait {
         $content = new Content;
 
         if ($el_content_part->children(0) != NULL) {
-            // echo $el_content_part;die();
-            if ($el_content_part->children(1)->class == 'youtube-player') {
+            if ($el_content_part->children(1) != NULL && $el_content_part->children(1)->class == 'youtube-player') {
                 $video_url   = $el_content_part->children(1)->src;
                 $content->setType('video');
                 $content->setUrl($video_url);

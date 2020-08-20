@@ -2,6 +2,8 @@
 
 namespace DevHumor\Helper;
 
+use DevHumor\Helper\Converter;
+
 class Response {
 
     private $current_data;
@@ -25,14 +27,6 @@ class Response {
 
     public function asXML() {
 
-    }
-
-    public function asExcel() {
-
-    }
-
-    public function asCSV() {
-        
     }
 
 }
